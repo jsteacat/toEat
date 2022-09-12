@@ -1,15 +1,34 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import NewRestaurantForm from '../components/NewRestaurantForm.vue'
 import RestaurantCard from '../components/RestaurantCard.vue'
 import SideMenu from '../components/SideMenu.vue'
 import type { Restaurant } from '@/types'
 
-type DataShape = {
-  filterText: string
-  restaurantList: Restaurant[]
-  isShowNewForm: boolean
-}
+const RESTAURANT_LIST = [
+  {
+    id: '9f995ce4-d2fc-4d00-af1d-6cb1647c6bd3',
+    name: 'Quiche From a Rose',
+    address: '283 Thisisnota St.',
+    website: 'www.quichefromarose.com',
+    status: 'Want to Try',
+  },
+  {
+    id: 'ae62a3da-791b-4f44-99a1-4be1b0ec30b8',
+    name: 'Tamago Never Dies',
+    address: '529 Letsgofora Dr.',
+    website: 'www.tamagoneverdies.com',
+    status: 'Recommended',
+  },
+  {
+    id: '9b361dae-2d44-4499-9940-97e188d41a32',
+    name: 'Penne For Your Thoughts',
+    address: '870 Thisisa St.',
+    website: 'www.penneforyourthoughts.com',
+    status: 'Do Not Recommend',
+  },
+]
 
 export default defineComponent({
   components: {
@@ -17,64 +36,67 @@ export default defineComponent({
     RestaurantCard,
     SideMenu,
   },
-  data: (): DataShape => ({
-    filterText: '',
-    restaurantList: [
-      {
-        id: '9f995ce4-d2fc-4d00-af1d-6cb1647c6bd3',
-        name: 'Quiche From a Rose',
-        address: '283 Thisisnota St.',
-        website: 'www.quichefromarose.com',
-        status: 'Want to Try',
-      },
-      {
-        id: 'ae62a3da-791b-4f44-99a1-4be1b0ec30b8',
-        name: 'Tamago Never Dies',
-        address: '529 Letsgofora Dr.',
-        website: 'www.tamagoneverdies.com',
-        status: 'Recommended',
-      },
-      {
-        id: '9b361dae-2d44-4499-9940-97e188d41a32',
-        name: 'Penne For Your Thoughts',
-        address: '870 Thisisa St.',
-        website: 'www.penneforyourthoughts.com',
-        status: 'Do Not Recommend',
-      },
-    ],
-    isShowNewForm: false,
-  }),
-  computed: {
-    filteredRestaurantList(): Restaurant[] {
-      return this.restaurantList.filter((restaurant) => {
+  setup() {
+    /**
+     * Data
+     */
+    const filterText = ref('')
+    const restaurantList = ref<Restaurant[]>(RESTAURANT_LIST)
+    const isShowNewForm = ref(false)
+
+    /**
+     * Computed
+     */
+    const filteredRestaurantList = computed((): Restaurant[] => {
+      return restaurantList.value.filter((restaurant) => {
         if (restaurant.name) {
-          return restaurant.name.toLowerCase().includes(this.filterText.toLowerCase())
+          return restaurant.name.toLowerCase().includes(filterText.value.toLowerCase())
         } else {
-          return this.restaurantList
+          return restaurantList.value
         }
       })
-    },
-    numberOfRestaurants(): number {
-      return this.filteredRestaurantList.length
-    },
-  },
-  methods: {
-    addRestaurant(payload: Restaurant): void {
-      this.restaurantList.push(payload)
-      this.hideForm()
-    },
-    deleteRestaurant(payload: Restaurant): void {
-      this.restaurantList = this.restaurantList.filter(({ id }) => id !== payload.id)
-    },
-    hideForm(): void {
-      this.isShowNewForm = false
-    },
-  },
-  mounted() {
-    const route = this.$route // ???
+    })
 
-    if (this.$route.query.new) {
-      this.isShowNewForm = true
+    const numberOfRestaurants = computed((): number => {
+      return filteredRestaurantList.value.length
+    })
+
+    /**
+     * Methods
+     */
+    const addRestaurant = (payload: Restaurant): void => {
+      restaurantList.value.push(payload)
+      hideForm()
+    }
+
+    const deleteRestaurant = (payload: Restaurant): void => {
+      restaurantList.value = restaurantList.value.filter(({ id }) => id !== payload.id)
+    }
+
+    const hideForm = (): void => {
+      isShowNewForm.value = false
+    }
+
+    /**
+     * Lifecycle
+     */
+    onMounted((): void => {
+      const route = useRoute()
+
+      if (route.query.new) {
+        isShowNewForm.value = true
+      }
+    })
+
+    return {
+      filterText,
+      restaurantList,
+      filteredRestaurantList,
+      numberOfRestaurants,
+      isShowNewForm,
+      addRestaurant,
+      deleteRestaurant,
+      hideForm,
     }
   },
 })
