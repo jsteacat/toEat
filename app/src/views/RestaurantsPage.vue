@@ -1,15 +1,23 @@
-<script>
-import NewRestaurantForm from '../components/NewRestaurantForm.vue'
-import RestaurantCard from '../components/RestaurantCard.vue'
-import SideMenu from '../components/SideMenu.vue'
+<script lang="ts">
+import { defineComponent } from 'vue';
+import NewRestaurantForm from '../components/NewRestaurantForm.vue';
+import RestaurantCard from '../components/RestaurantCard.vue';
+import SideMenu from '../components/SideMenu.vue';
+import type { Restaurant } from '@/types';
 
-export default {
+type DataShape = {
+  filterText: string,
+  restaurantList: Restaurant[],
+  isShowNewForm: boolean
+}
+
+export default defineComponent({
   components: {
     NewRestaurantForm,
     RestaurantCard,
     SideMenu,
   },
-  data: () => ({
+  data: (): DataShape => ({
     filterText: '',
     restaurantList: [
       {
@@ -34,44 +42,42 @@ export default {
         status: 'Do Not Recommend',
       },
     ],
-    showNewForm: false,
+    isShowNewForm: false,
   }),
   computed: {
-    filteredRestaurantList() {
+    filteredRestaurantList(): Restaurant[] {
       return this.restaurantList.filter((restaurant) => {
         if (restaurant.name) {
-          return restaurant.name.toLowerCase().includes(this.filterText.toLowerCase())
+          return restaurant.name.toLowerCase().includes(this.filterText.toLowerCase());
         } else {
-          return this.restaurantList
+          return this.restaurantList;
         }
-      })
+      });
     },
-    numberOfRestaurants() {
-      return this.filteredRestaurantList.length
+    numberOfRestaurants(): number {
+      return this.filteredRestaurantList.length;
     },
   },
   methods: {
-    addRestaurant(payload) {
-      this.restaurantList.push(payload)
-      this.hideForm()
+    addRestaurant(payload: Restaurant): void {
+      this.restaurantList.push(payload);
+      this.hideForm();
     },
-    deleteRestaurant(payload) {
-      this.restaurantList = this.restaurantList.filter((restaurant) => {
-        return restaurant.id !== payload.id
-      })
+    deleteRestaurant(payload: Restaurant): void {
+      this.restaurantList = this.restaurantList.filter(({ id }) => id !== payload.id);
     },
-    hideForm() {
-      this.showNewForm = false
+    hideForm(): void {
+      this.isShowNewForm = false;
     },
   },
   mounted() {
-    const route = this.$route
+    const route = this.$route; // ???
 
     if (this.$route.query.new) {
-      this.showNewForm = true
+      this.isShowNewForm = true
     }
   },
-}
+})
 </script>
 
 <template>
@@ -85,7 +91,7 @@ export default {
         <h1 class="title">Restaurants</h1>
 
         <!-- CTA Bar -->
-        <nav v-if="!showNewForm" class="level">
+        <nav v-if="!isShowNewForm" class="level">
           <div class="level-left">
             <div class="level-item">
               <p class="subtitle is-5">
@@ -94,7 +100,7 @@ export default {
             </div>
 
             <p class="level-item">
-              <button @click="showNewForm = true" class="button is-success">New</button>
+              <button @click="isShowNewForm = true" class="button is-success">New</button>
             </p>
 
             <div class="level-item is-hidden-tablet-only">
@@ -111,7 +117,7 @@ export default {
         </nav>
 
         <!-- New Restaurant Form -->
-        <NewRestaurantForm v-if="showNewForm" @add-new-restaurant="addRestaurant" @cancel-new-restaurant="hideForm" />
+        <NewRestaurantForm v-if="isShowNewForm" @add-new-restaurant="addRestaurant" @cancel-new-restaurant="hideForm" />
 
         <!-- Display Results -->
         <div v-else class="columns is-multiline">
