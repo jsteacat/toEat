@@ -68,7 +68,7 @@ export default {
     const route = this.$route
 
     if (this.$route.query.new) {
-      showNewForm.value = true
+      this.showNewForm = true
     }
   },
 }
