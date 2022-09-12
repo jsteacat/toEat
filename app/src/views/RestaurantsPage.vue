@@ -1,13 +1,13 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
-import NewRestaurantForm from '../components/NewRestaurantForm.vue';
-import RestaurantCard from '../components/RestaurantCard.vue';
-import SideMenu from '../components/SideMenu.vue';
-import type { Restaurant } from '@/types';
+import { defineComponent } from 'vue'
+import NewRestaurantForm from '../components/NewRestaurantForm.vue'
+import RestaurantCard from '../components/RestaurantCard.vue'
+import SideMenu from '../components/SideMenu.vue'
+import type { Restaurant } from '@/types'
 
 type DataShape = {
-  filterText: string,
-  restaurantList: Restaurant[],
+  filterText: string
+  restaurantList: Restaurant[]
   isShowNewForm: boolean
 }
 
@@ -48,30 +48,30 @@ export default defineComponent({
     filteredRestaurantList(): Restaurant[] {
       return this.restaurantList.filter((restaurant) => {
         if (restaurant.name) {
-          return restaurant.name.toLowerCase().includes(this.filterText.toLowerCase());
+          return restaurant.name.toLowerCase().includes(this.filterText.toLowerCase())
         } else {
-          return this.restaurantList;
+          return this.restaurantList
         }
-      });
+      })
     },
     numberOfRestaurants(): number {
-      return this.filteredRestaurantList.length;
+      return this.filteredRestaurantList.length
     },
   },
   methods: {
     addRestaurant(payload: Restaurant): void {
-      this.restaurantList.push(payload);
-      this.hideForm();
+      this.restaurantList.push(payload)
+      this.hideForm()
     },
     deleteRestaurant(payload: Restaurant): void {
-      this.restaurantList = this.restaurantList.filter(({ id }) => id !== payload.id);
+      this.restaurantList = this.restaurantList.filter(({ id }) => id !== payload.id)
     },
     hideForm(): void {
-      this.isShowNewForm = false;
+      this.isShowNewForm = false
     },
   },
   mounted() {
-    const route = this.$route; // ???
+    const route = this.$route // ???
 
     if (this.$route.query.new) {
       this.isShowNewForm = true

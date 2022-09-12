@@ -1,15 +1,23 @@
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import NewDishForm from '../components/NewDishForm.vue'
 import DishCard from '../components/DishCard.vue'
 import SideMenu from '../components/SideMenu.vue'
+import type { Dish } from '@/types'
 
-export default {
+type DataShape = {
+  filterText: string
+  dishList: Dish[]
+  isShowNewForm: boolean
+}
+
+export default defineComponent({
   components: {
     NewDishForm,
     DishCard,
     SideMenu,
   },
-  data: () => ({
+  data: (): DataShape => ({
     filterText: '',
     dishList: [
       {
@@ -28,10 +36,10 @@ export default {
         status: 'Do Not Recommend',
       },
     ],
-    showNewForm: false,
+    isShowNewForm: false,
   }),
   computed: {
-    filteredDishList() {
+    filteredDishList(): Dish[] {
       return this.dishList.filter((dish) => {
         if (dish.name) {
           return dish.name.toLowerCase().includes(this.filterText.toLowerCase())
@@ -40,31 +48,29 @@ export default {
         }
       })
     },
-    numberOfDishes() {
+    numberOfDishes(): number {
       return this.filteredDishList.length
     },
   },
   methods: {
-    addDish(payload) {
+    addDish(payload: Dish): void {
       this.dishList.push(payload)
       this.hideForm()
     },
-    deleteDish(payload) {
-      this.dishList = this.dishList.filter((dish) => {
-        return dish.id !== payload.id
-      })
+    deleteDish(payload: Dish): void {
+      this.dishList = this.dishList.filter(({ id }) => id !== payload.id)
     },
-    hideForm() {
-      this.showNewForm = false
+    hideForm(): void {
+      this.isShowNewForm = false
     },
   },
   mounted() {
-    const route = this.$route
+    const route = this.$route // ???
     if (route.query.new) {
-      this.showNewForm = true
+      this.isShowNewForm = true
     }
   },
-}
+})
 </script>
 
 <template>
@@ -78,7 +84,7 @@ export default {
         <h1 class="title">Dishes</h1>
 
         <!-- CTA Bar -->
-        <nav v-if="!showNewForm" class="level">
+        <nav v-if="!isShowNewForm" class="level">
           <div class="level-left">
             <div class="level-item">
               <p class="subtitle is-5">
@@ -87,7 +93,7 @@ export default {
             </div>
 
             <p class="level-item">
-              <button @click="showNewForm = true" class="button is-success">New</button>
+              <button @click="isShowNewForm = true" class="button is-success">New</button>
             </p>
 
             <div class="level-item is-hidden-tablet-only">
@@ -104,7 +110,7 @@ export default {
         </nav>
 
         <!-- New Dish Form -->
-        <NewDishForm v-if="showNewForm" @add-new-dish="addDish" @cancel-new-dish="hideForm" />
+        <NewDishForm v-if="isShowNewForm" @add-new-dish="addDish" @cancel-new-dish="hideForm" />
 
         <!-- Display Results -->
         <div v-else class="columns is-multiline">

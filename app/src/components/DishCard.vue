@@ -1,7 +1,7 @@
 <script lang="ts">
-import { defineComponent } from 'vue';
-import type { PropType } from 'vue';
-import type { Dish } from '@/types';
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
+import type { Dish } from '@/types'
 
 export default defineComponent({
   props: {
@@ -30,7 +30,7 @@ export default defineComponent({
       this.$emit('delete-dish', this.dish)
     },
   },
-});
+})
 </script>
 
 <template>
