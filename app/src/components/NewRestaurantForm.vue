@@ -1,18 +1,35 @@
-<script>
+<script setup lang='ts'>
+import { defineEmits, onMounted, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { RESTAURANT_STATUS_LIST } from '@/constants'
+import type { Restaurant } from '@/types'
 
-export default {
-  emits: ['add-new-restaurant', 'cancel-new-restaurant'],
-  data: () => ({
-    newRestaurant: {
-      id: uuidv4(),
-      name: '',
-      address: '',
-      website: '',
-      status: 'Want to Try',
-    },
-  }),
+const emits = defineEmits<{
+  (e: 'add-new-restaurant', restaurant: Restaurant): void
+  (e: 'cancel-new-restaurant'): void
+}>()
+
+const elNameInput = ref<HTMLInputElement | null>(null)
+
+const newRestaurant = ref<Restaurant>({
+  id: uuidv4(),
+  name: '',
+  address: '',
+  website: '',
+  status: 'Want to Try',
+})
+
+const addNewRestaurant = () => {
+  emits('add-new-restaurant', newRestaurant.value)
 }
+
+const cancelNewRestaurant = () => {
+  emits('cancel-new-restaurant')
+}
+
+onMounted(() => {
+  elNameInput.value?.focus()
+})
 </script>
 
 <template>
@@ -22,10 +39,10 @@ export default {
         <label for="name" class="label">Name</label>
         <div class="control">
           <input
-            :value="newRestaurant.name"
-            @keyup.space="updateName"
+            v-model="newRestaurant.name"
             type="text"
             class="input is-large"
+            id="name"
             placeholder="Beignet and the Jets"
             required
             ref="elNameInput"
@@ -35,14 +52,14 @@ export default {
       <div class="field">
         <label for="website" class="label">Website</label>
         <div class="control">
-          <input v-model="newRestaurant.website" type="text" class="input" placeholder="www.beignetandthejets.com" />
+          <input v-model="newRestaurant.website" type="text" class="input" id="website" placeholder="www.beignetandthejets.com" />
         </div>
       </div>
       <div class="field mb-5">
         <label for="status" class="label">Status</label>
         <div class="select">
           <select v-model="newRestaurant.status" id="status">
-            <option v-for="status in restaurantStatusList" :value="status" :key="`option-${status}`">
+            <option v-for="status in RESTAURANT_STATUS_LIST" :value="status" :key="`option-${status}`">
               {{ status }}
             </option>
           </select>
@@ -50,8 +67,8 @@ export default {
       </div>
       <div class="field">
         <div class="buttons">
-          <button @click="$emit('add-new-restaurant', newRestaurant)" class="button is-success">Create</button>
-          <button @click="$emit('cancel-new-restaurant')" class="button is-light">Cancel</button>
+          <button @click="addNewRestaurant" class="button is-success">Create</button>
+          <button @click="cancelNewRestaurant" class="button is-light">Cancel</button>
         </div>
       </div>
     </div>
