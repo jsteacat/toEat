@@ -1,5 +1,5 @@
-<script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import NewDishForm from '../components/NewDishForm.vue'
 import DishCard from '../components/DishCard.vue'
@@ -24,75 +24,55 @@ const DISH_LIST = [
   },
 ]
 
-export default defineComponent({
-  components: {
-    NewDishForm,
-    DishCard,
-    SideMenu,
-  },
-  setup() {
-    /**
-     * Data
-     */
-    const filterText = ref('')
-    const dishList = ref<Dish[]>(DISH_LIST)
-    const isShowNewForm = ref(false)
+/**
+ * Data
+ */
+const filterText = ref('')
+const dishList = ref<Dish[]>(DISH_LIST)
+const isShowNewForm = ref(false)
 
-    /**
-     * Computed
-     */
-    const filteredDishList = computed((): Dish[] => {
-      return dishList.value.filter((dish) => {
-        if (dish.name) {
-          return dish.name.toLowerCase().includes(filterText.value.toLowerCase())
-        } else {
-          return dishList.value
-        }
-      })
-    })
-
-    const numberOfDishes = computed((): number => {
-      return filteredDishList.value.length
-    })
-
-    /**
-     * Methods
-     */
-    const addDish = (payload: Dish): void => {
-      dishList.value.push(payload)
-      hideForm()
+/**
+ * Computed
+ */
+const filteredDishList = computed((): Dish[] => {
+  return dishList.value.filter((dish) => {
+    if (dish.name) {
+      return dish.name.toLowerCase().includes(filterText.value.toLowerCase())
+    } else {
+      return dishList.value
     }
+  })
+})
 
-    const deleteDish = (payload: Dish): void => {
-      dishList.value = dishList.value.filter(({ id }) => id !== payload.id)
-    }
+const numberOfDishes = computed((): number => {
+  return filteredDishList.value.length
+})
 
-    const hideForm = (): void => {
-      isShowNewForm.value = false
-    }
+/**
+ * Methods
+ */
+const addDish = (payload: Dish): void => {
+  dishList.value.push(payload)
+  hideForm()
+}
 
-    /**
-     * Lifecycle
-     */
-    onMounted((): void => {
-      const route = useRoute()
+const deleteDish = (payload: Dish): void => {
+  dishList.value = dishList.value.filter(({ id }) => id !== payload.id)
+}
 
-      if (route.query.new) {
-        isShowNewForm.value = true
-      }
-    })
+const hideForm = (): void => {
+  isShowNewForm.value = false
+}
 
-    return {
-      filterText,
-      dishList,
-      filteredDishList,
-      numberOfDishes,
-      isShowNewForm,
-      addDish,
-      deleteDish,
-      hideForm,
-    }
-  },
+/**
+ * Lifecycle
+ */
+onMounted((): void => {
+  const route = useRoute()
+
+  if (route.query.new) {
+    isShowNewForm.value = true
+  }
 })
 </script>
 
