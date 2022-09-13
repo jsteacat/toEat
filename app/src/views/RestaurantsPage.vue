@@ -1,5 +1,5 @@
-<script lang="ts">
-import { computed, defineComponent, onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import NewRestaurantForm from '../components/NewRestaurantForm.vue'
 import RestaurantCard from '../components/RestaurantCard.vue'
@@ -30,75 +30,55 @@ const RESTAURANT_LIST = [
   },
 ]
 
-export default defineComponent({
-  components: {
-    NewRestaurantForm,
-    RestaurantCard,
-    SideMenu,
-  },
-  setup() {
-    /**
-     * Data
-     */
-    const filterText = ref('')
-    const restaurantList = ref<Restaurant[]>(RESTAURANT_LIST)
-    const isShowNewForm = ref(false)
+/**
+ * Data
+ */
+const filterText = ref('')
+const restaurantList = ref<Restaurant[]>(RESTAURANT_LIST)
+const isShowNewForm = ref(false)
 
-    /**
-     * Computed
-     */
-    const filteredRestaurantList = computed((): Restaurant[] => {
-      return restaurantList.value.filter((restaurant) => {
-        if (restaurant.name) {
-          return restaurant.name.toLowerCase().includes(filterText.value.toLowerCase())
-        } else {
-          return restaurantList.value
-        }
-      })
-    })
-
-    const numberOfRestaurants = computed((): number => {
-      return filteredRestaurantList.value.length
-    })
-
-    /**
-     * Methods
-     */
-    const addRestaurant = (payload: Restaurant): void => {
-      restaurantList.value.push(payload)
-      hideForm()
+/**
+ * Computed
+ */
+const filteredRestaurantList = computed((): Restaurant[] => {
+  return restaurantList.value.filter((restaurant) => {
+    if (restaurant.name) {
+      return restaurant.name.toLowerCase().includes(filterText.value.toLowerCase())
+    } else {
+      return restaurantList.value
     }
+  })
+})
 
-    const deleteRestaurant = (payload: Restaurant): void => {
-      restaurantList.value = restaurantList.value.filter(({ id }) => id !== payload.id)
-    }
+const numberOfRestaurants = computed((): number => {
+  return filteredRestaurantList.value.length
+})
 
-    const hideForm = (): void => {
-      isShowNewForm.value = false
-    }
+/**
+ * Methods
+ */
+const addRestaurant = (payload: Restaurant): void => {
+  restaurantList.value.push(payload)
+  hideForm()
+}
 
-    /**
-     * Lifecycle
-     */
-    onMounted((): void => {
-      const route = useRoute()
+const deleteRestaurant = (payload: Restaurant): void => {
+  restaurantList.value = restaurantList.value.filter(({ id }) => id !== payload.id)
+}
 
-      if (route.query.new) {
-        isShowNewForm.value = true
-      }
-    })
+const hideForm = (): void => {
+  isShowNewForm.value = false
+}
 
-    return {
-      filterText,
-      restaurantList,
-      filteredRestaurantList,
-      numberOfRestaurants,
-      isShowNewForm,
-      addRestaurant,
-      deleteRestaurant,
-      hideForm,
-    }
-  },
+/**
+ * Lifecycle
+ */
+onMounted((): void => {
+  const route = useRoute()
+
+  if (route.query.new) {
+    isShowNewForm.value = true
+  }
 })
 </script>
 
