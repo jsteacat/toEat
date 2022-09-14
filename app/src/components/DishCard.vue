@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineEmits, defineProps  } from 'vue'
+import { computed, defineEmits, defineProps } from 'vue'
 import type { Dish } from '@/types'
 
 type PropTypes = {

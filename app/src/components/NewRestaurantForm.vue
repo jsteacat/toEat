@@ -1,4 +1,4 @@
-<script setup lang='ts'>
+<script setup lang="ts">
 import { defineEmits, onMounted, ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { RESTAURANT_STATUS_LIST } from '@/constants'
@@ -52,7 +52,13 @@ onMounted(() => {
       <div class="field">
         <label for="website" class="label">Website</label>
         <div class="control">
-          <input v-model="newRestaurant.website" type="text" class="input" id="website" placeholder="www.beignetandthejets.com" />
+          <input
+            v-model="newRestaurant.website"
+            type="text"
+            class="input"
+            id="website"
+            placeholder="www.beignetandthejets.com"
+          />
         </div>
       </div>
       <div class="field mb-5">
