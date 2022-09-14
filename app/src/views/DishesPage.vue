@@ -5,24 +5,25 @@ import NewDishForm from '../components/NewDishForm.vue'
 import DishCard from '../components/DishCard.vue'
 import SideMenu from '../components/SideMenu.vue'
 import type { Dish } from '@/types'
-import { DISH_LIST } from '@/stubs'
+import { useDishStore } from '@/stores/DishStore'
 
 /**
  * Data
  */
+const dishStore = useDishStore()
+const dishList = dishStore.list
 const filterText = ref('')
-const dishList = ref<Dish[]>(DISH_LIST)
 const isShowNewForm = ref(false)
 
 /**
  * Computed
  */
 const filteredDishList = computed((): Dish[] => {
-  return dishList.value.filter((dish) => {
+  return dishList.filter((dish) => {
     if (dish.name) {
       return dish.name.toLowerCase().includes(filterText.value.toLowerCase())
     } else {
-      return dishList.value
+      return dishList
     }
   })
 })
@@ -35,12 +36,12 @@ const numberOfDishes = computed((): number => {
  * Methods
  */
 const addDish = (payload: Dish): void => {
-  dishList.value.push(payload)
+  dishStore.addDish(payload)
   hideForm()
 }
 
 const deleteDish = (payload: Dish): void => {
-  dishList.value = dishList.value.filter(({ id }) => id !== payload.id)
+  dishStore.deleteDish(payload)
 }
 
 const hideForm = (): void => {

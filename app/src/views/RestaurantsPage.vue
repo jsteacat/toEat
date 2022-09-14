@@ -5,24 +5,25 @@ import NewRestaurantForm from '../components/NewRestaurantForm.vue'
 import RestaurantCard from '../components/RestaurantCard.vue'
 import SideMenu from '../components/SideMenu.vue'
 import type { Restaurant } from '@/types'
-import { RESTAURANT_LIST } from '@/stubs'
+import { useRestaurantStore } from '@/stores/RestaurantStore'
 
 /**
  * Data
  */
+const restaurantStore = useRestaurantStore()
+const restaurantList = restaurantStore.list
 const filterText = ref('')
-const restaurantList = ref<Restaurant[]>(RESTAURANT_LIST)
 const isShowNewForm = ref(false)
 
 /**
  * Computed
  */
 const filteredRestaurantList = computed((): Restaurant[] => {
-  return restaurantList.value.filter((restaurant) => {
+  return restaurantList.filter((restaurant) => {
     if (restaurant.name) {
       return restaurant.name.toLowerCase().includes(filterText.value.toLowerCase())
     } else {
-      return restaurantList.value
+      return restaurantList
     }
   })
 })
@@ -35,16 +36,20 @@ const numberOfRestaurants = computed((): number => {
  * Methods
  */
 const addRestaurant = (payload: Restaurant): void => {
-  restaurantList.value.push(payload)
+  restaurantStore.addRestaurant(payload)
   hideForm()
 }
 
 const deleteRestaurant = (payload: Restaurant): void => {
-  restaurantList.value = restaurantList.value.filter(({ id }) => id !== payload.id)
+  restaurantStore.deleteRestaurant(payload)
 }
 
 const hideForm = (): void => {
   isShowNewForm.value = false
+}
+
+const updateFilterText = (event: KeyboardEvent) => {
+  filterText.value = (event.target as HTMLInputElement).value
 }
 
 /**
@@ -85,7 +90,13 @@ onMounted((): void => {
             <div class="level-item is-hidden-tablet-only">
               <div class="field has-addons">
                 <p class="control">
-                  <input class="input" type="text" placeholder="Restaurant name" v-model="filterText" />
+                  <input
+                    class="input"
+                    type="text"
+                    placeholder="Restaurant name"
+                    :value="filterText"
+                    @keyup.enter="updateFilterText"
+                  />
                 </p>
                 <p class="control">
                   <button class="button">Search</button>
